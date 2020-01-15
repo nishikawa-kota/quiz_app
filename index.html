@@ -16,18 +16,16 @@
 	const quiztitle = document.getElementById('title');
 	let quizcontent = [];
 	let quiznum = 0;
-	let myJson = '';
 	let correctanser = 0;
-	getquizbtn.addEventListener('click',fetchBtn,true);
+	getquizbtn.addEventListener('click',fetchJson,true);
 
-function fetchBtn(event){
+function fetchJson(event){
+	let myJson = '';
 	fetch('https://opentdb.com/api.php?amount=10&category=25&&type=multiple')
 	.then(function(response) {
 		return response.json();
 	})
 	.then(function(myJson) {
-
-		localStorage.setItem('form_data', JSON.stringify(myJson));
 		quizcontent = JSON.stringify(myJson);
 		myJson = JSON.parse(quizcontent);
 		renderquiz(myJson);
@@ -60,7 +58,6 @@ function appendquiz() {
 
 }
 function renderBtn (value=""){
-	const clickbtn = '';
 	let container = '';
 	container = document.createElement("div");
 	value.forEach(function( list ) {
@@ -78,18 +75,13 @@ function renderBtn (value=""){
 
 }
 function renderquestion(value="") {
-	const clickbtn = '';
-	let question = '';
-	let h2questiontitle = '';
-	let text = '';
-	container = document.createElement("div");
-	let h2title = document.createElement("h2");
-	let h2question = document.createElement("h2");
+	const container = document.createElement("div");
+	const h2title = document.createElement("h2");
+	const h2question = document.createElement("h2");
+	const text = '難易度' + value['difficulty'];
 
-	text = '難易度' + value['difficulty'];
-
-	question = document.createTextNode(text);
-	h2questiontitle = document.createTextNode(value['question']);
+	const question = document.createTextNode(text);
+	const h2questiontitle = document.createTextNode(value['question']);
 	h2title.appendChild(question);
 	h2question.appendChild(h2questiontitle);
 	container.appendChild(h2title);
@@ -115,7 +107,7 @@ function clickjudge (){
 		h2title = document.createTextNode('あなたの正解数は' + correctanser + 'です。');
 		quiztitle.appendChild(h2title);
 		sentence.appendChild(endsentence);
-		let input = document.createElement("input");
+		const input = document.createElement("input");
 		input.type = "button";
 		input.id = "fetchjson";
 		input.value = "スタート";
