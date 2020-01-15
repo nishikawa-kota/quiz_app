@@ -1,0 +1,124 @@
+<html>
+
+<h2 id="title">ようこそ</h2>
+<hr>
+<div id="sentence">
+以下のボタンをクリックしてください。<br>
+<input type="button" id="fetchjson" value="スタート">
+
+</div>
+<hr>
+</html>
+
+<script>
+	const getquizbtn = document.getElementById('fetchjson');
+	const sentence = document.getElementById('sentence');
+	const quiztitle = document.getElementById('title');
+	let quizcontent = [];
+	let quiznum = 0;
+	let correctanser = 0;
+	getquizbtn.addEventListener('click',fetchJson,true);
+
+function fetchJson(event){
+	let myJson = '';
+	fetch('https://opentdb.com/api.php?amount=10&category=25&&type=multiple')
+	.then(function(response) {
+		return response.json();
+	})
+	.then(function(myJson) {
+		quizcontent = JSON.stringify(myJson);
+		myJson = JSON.parse(quizcontent);
+		renderquiz(myJson);
+	});
+
+
+
+}
+function renderquiz(myJson) {
+	quizcontent = myJson;
+	quiznum = quiznum + 1;
+
+	quiztitle.innerHTML = '第'+ quiznum +'問' ;
+	sentence.innerHTML = '';
+	appendbtn = renderBtn(myJson['results'][quiznum - 1	].incorrect_answers);
+	appendsentence = renderquestion(myJson['results'][quiznum - 1]);
+
+	sentence.appendChild(appendsentence);
+	sentence.appendChild(appendbtn);
+
+}
+function appendquiz() {
+	quiznum = quiznum + 1;
+	quiztitle.innerHTML = '第'+ quiznum +'問' ;
+	sentence.innerHTML = '';
+	appendbtn = renderBtn(quizcontent['results'][quiznum - 1].incorrect_answers);
+	appendsentence = renderquestion(quizcontent['results'][quiznum - 1]);
+	sentence.appendChild(appendsentence);
+	sentence.appendChild(appendbtn);
+
+}
+function renderBtn (value=""){
+	let container = '';
+	container = document.createElement("div");
+	value.forEach(function( list ) {
+		let input = document.createElement("input");
+		input.type = "button";
+		input.value = list;
+		input.addEventListener('click', clickjudge, false);
+		container.appendChild(input);
+
+	});
+
+	return container;
+
+
+
+}
+function renderquestion(value="") {
+	const container = document.createElement("div");
+	const h2title = document.createElement("h2");
+	const h2question = document.createElement("h2");
+	const text = '難易度' + value['difficulty'];
+
+	const question = document.createTextNode(text);
+	const h2questiontitle = document.createTextNode(value['question']);
+	h2title.appendChild(question);
+	h2question.appendChild(h2questiontitle);
+	container.appendChild(h2title);
+	container.appendChild(h2question);
+
+	return container;
+
+
+}
+function clickjudge (){
+	if (quiznum < quizcontent['results'].length) {
+		if (event.target.value === quizcontent['results'][quiznum - 1]['correct_answer'] ) {
+
+			correctanser = correctanser + 1;
+		} else {
+			appendquiz	();
+		}
+
+	} else {
+		sentence.innerHTML = '';
+		quiztitle.innerHTML ='';
+		endsentence = document.createTextNode('最初からやりなおしたいかたはこちら');
+		h2title = document.createTextNode('あなたの正解数は' + correctanser + 'です。');
+		quiztitle.appendChild(h2title);
+		sentence.appendChild(endsentence);
+		const input = document.createElement("input");
+		input.type = "button";
+		input.id = "fetchjson";
+		input.value = "スタート";
+		quiznum = 0;
+		input.addEventListener('click', appendquiz, false);
+		sentence.appendChild(input);
+
+	}
+
+}
+
+
+
+</script>
